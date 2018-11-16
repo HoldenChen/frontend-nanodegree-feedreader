@@ -1,7 +1,4 @@
-describe('for webstrom generate code',function () {
-
-})
-/* FeedReaderSpec.js
+/* feedreader.js
  *
  * This is the spec file that Jasmine will read and contains
  * all of the tests that will be run against your application.
@@ -34,10 +31,19 @@ $(function() {
         });
 
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a URL defined
-         * and that the URL is not empty.
-         */
+        it('each feed url  not empty', function () {
+            for (const feed of allFeeds) {
+                expect(feed.url).toBeDefined();
+                expect(feed.url.length).not.toBe(0);
+            }
+        });
+
+        it('each feed name not empty', function () {
+            for (const argument of allFeeds) {
+                expect(argument.name).toBeDefined();
+                expect(argument.name.length).not.toBe(0);
+            }
+        });
 
 
         /* TODO: Write a test that loops through each feed
@@ -47,37 +53,67 @@ $(function() {
     });
 
     describe("The menu", function () {
-        
+
+        it('menu sholud be hidden by default', function () {
+            const body = document.body;
+            let classname = body.className;
+            expect(classname).toBe('menu-hidden');
+        });
+
+        it('menu should able to hidden or show after click icon', function () {
+            const menuIcon = $(".menu-icon-link");
+            menuIcon.click();
+            expect(document.body.className).not.toBe('menu-hidden');
+            menuIcon.click();
+            expect(document.body.className).toBe('menu-hidden');
+        });
+
     });
 
 
-    /* TODO: Write a new test suite named "The menu" */
 
-        /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
-         */
+    describe('Initial Entries', function () {
+        let title ;
+       beforeEach(function (done) {
+           loadFeed(0,function(){
+               title = $('.feed');
+               done();
+           })
+       });
+        it('loadFeed work as expected', function () {
+            expect(title.find(".entry").length).not.toBe(0);
+        });
+    });
 
-         /* TODO: Write a test that ensures the menu changes
-          * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
-          * clicked and does it hide when clicked again.
-          */
 
-    /* TODO: Write a new test suite named "Initial Entries" */
+    describe('New Feed Selection', function () {
+        let oldtitle;
+        let newtitle;
+        //第一次加载第一个条目，并记录下加载完成后，对应条目的标题内容
+        beforeEach(function(done){
 
-        /* TODO: Write a test that ensures when the loadFeed
-         * function is called and completes its work, there is at least
-         * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
-         * the use of Jasmine's beforeEach and asynchronous done() function.
-         */
+            //设置更长的超时时间，避免网络较慢导致的超时。
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+            loadFeed(0,function(){
+                oldtitle = $(".header-title").text();
+                done();
+            })
+        });
 
-    /* TODO: Write a new test suite named "New Feed Selection" */
+        //加载完第一个条目后，加载第二个条目，标题内容。
+        beforeEach(function (done) {
+            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+            loadFeed(1,function () {
+                newtitle = $(".header-title").text();
+                done();
+            })
+        })
 
-        /* TODO: Write a test that ensures when a new feed is loaded
-         * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
-         */
+        it('content actually changed after new selection', function () {
+            //比对两次标题内容是否改变。
+            expect(oldtitle).not.toBe(newtitle);
+        });
+    });
+
+
 }());
