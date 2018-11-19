@@ -55,17 +55,15 @@ $(function() {
     describe("The menu", function () {
 
         it('menu sholud be hidden by default', function () {
-            const body = document.body;
-            let classname = body.className;
-            expect(classname).toBe('menu-hidden');
+            expect($("body").hasClass("menu-hidden")).toBe(true);
         });
 
         it('menu should able to hidden or show after click icon', function () {
             const menuIcon = $(".menu-icon-link");
             menuIcon.click();
-            expect(document.body.className).not.toBe('menu-hidden');
+            expect($("body").hasClass("menu-hidden")).toBe(false);
             menuIcon.click();
-            expect(document.body.className).toBe('menu-hidden');
+            expect($("body").hasClass("menu-hidden")).toBe(true);
         });
 
     });
@@ -73,7 +71,7 @@ $(function() {
 
 
     describe('Initial Entries', function () {
-        let title ;
+       let title ;
        beforeEach(function (done) {
            loadFeed(0,function(){
                title = $('.feed');
@@ -97,23 +95,19 @@ $(function() {
             loadFeed(0,function(){
                 oldtitle = $(".header-title").text();
                 done();
+
+                //加载完第一个条目后，加载第二个条目，标题内容。
+                loadFeed(1,function () {
+                    newtitle = $(".header-title").text();
+                    done();
+                })
             })
         });
 
-        //加载完第一个条目后，加载第二个条目，标题内容。
-        beforeEach(function (done) {
-            jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-            loadFeed(1,function () {
-                newtitle = $(".header-title").text();
-                done();
-            })
-        })
 
         it('content actually changed after new selection', function () {
             //比对两次标题内容是否改变。
             expect(oldtitle).not.toBe(newtitle);
         });
     });
-
-
 }());
